@@ -1,0 +1,171 @@
+name: Build Docker && Deploy Stage
+
+on:
+  push:
+    branches:
+      - stage
+    paths-ignore:
+      - '.github/**'
+  workflow_dispatch:
+
+env:
+  AWS_REGION: "eu-west-1"
+
+jobs:
+  docker:
+    runs-on: self-hosted
+    outputs:
+      imageTag: ${{ steps.meta.outputs.json }}
+    steps:
+      - name: Get current date
+        id: date
+        run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
+      -
+        name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
+      -
+        name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+      -
+        name: Login to GitHub Container Registry
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.DOCKER_TOKEN }}
+      - uses: actions/checkout@v3.1.0
+        name: Checkout current repository
+      - uses: actions/checkout@v3.1.0
+        name: Checkout protobuf
+        with:
+          repository: Uspacy/protobuf
+          ref: 'v0.6'
+          path: 'protobuf'
+          token: ${{ secrets.DOCKER_TOKEN }}
+      - name: Build Protobuf
+        run: |
+             cd protobuf
+             make build-php
+      -
+        name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v3
+        with:
+          images: |
+            ghcr.io/${{ github.repository }}
+          tags: |
+            type=schedule
+            type=ref,event=branch
+            type=ref,event=pr
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=semver,pattern={{major}}
+            type=sha
+      -
+        name: Build and push
+        id: docker_build
+        uses: docker/build-push-action@v2
+        env:
+          CI_COMMIT_SHA: ${{ steps.date.outputs.date }}
+        with:
+          build-args: |
+             COMPOSER_AUTH=${{ secrets.COMPOSER_AUTH }}
+             NEW_RELIC_LICENSE_KEY=${{ secrets.NEW_RELIC_LICENSE_KEY }}
+             NEW_RELIC_APPNAME=${{ github.event.repository.name }}
+             NEW_RELIC_DAEMON_SVC=newrelic-php-daemon.monitoring.svc.cluster.local:31339
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+      -
+        name: Image digest
+        run: echo ${{ steps.docker_build.outputs.digest }}
+
+  migration:
+    runs-on: self-hosted
+    needs: docker
+    services:
+      app:
+         image: ${{ fromJSON(needs.docker.outputs.imageTag).tags[1] }}
+         options: >-
+               -p 8080:8080
+               -p 80:80
+               -e APP_KEY='base64:+3LUWg8XAnQUP18F6MR7Zi26Bxb5R6KqQZbGDB4BWPM='
+               -e APP_ENV='local'
+               -e DB_CONNECTION='mysql'
+               -e REDIS_HOST='redis'
+               -e APP_DEBUG='true'
+               -e LOG_CHANNEL='json'
+               -e LOG_LEVEL='debug'
+               -e REDIS_CLIENT='predis'
+               -e LOG_DEPRECATIONS_CHANNEL='null'
+               -e APP_NAME='${{ github.event.repository.name }}'
+               -e CACHE_DRIVER='redis'
+      redis:
+         image: redis
+    steps:
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1-node16
+        with:
+          aws-access-key-id: ${{ secrets.AWS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET }}
+          aws-region: ${{ env.AWS_REGION }}
+      - name: Read secrets from AWS Secrets Manager into environment variables
+        uses: abhilash1in/aws-secrets-manager-action@v2.1.0
+        with:
+          secrets: |
+             uastage
+          parse-json: true
+      - uses: actions/checkout@v3.1.0
+        name: Checkout current repository
+      - name: Get changed files in the docs folder
+        id: migration
+        uses: tj-actions/changed-files@v35
+        with:
+          files: database/migrations/**  # Alternatively using: `docs/**` or `docs`
+      - uses: addnab/docker-run-action@v3
+        if: steps.migration.outputs.any_changed == 'true'
+        env:
+            PORTAL_DB_HOST: ${{ env.UASTAGE_HOST }}
+            PORTAL_DB_USER: ${{ env.UASTAGE_USERNAME }}
+            PORTAL_DB_PASS: ${{ env.UASTAGE_PASSWORD }}
+            PORTAL_DB_NAME: 'portal-service'
+        with:
+            username: ${{ github.repository_owner }}
+            password: ${{ secrets.DOCKER_TOKEN }}
+            registry: ghcr.io
+            image: ghcr.io/uspacy/migration-tool:main
+            options: -e PORTAL_DB_HOST -e PORTAL_DB_USER -e PORTAL_DB_PASS -e PORTAL_DB_NAME
+            run: python /home/migrate/migrate.py -m --withoutSeeding --ServiceCode ${{ github.event.repository.name }}  --serviceUrl http://app:8080
+      - run: docker logs "${{ job.services.app.id }}"
+
+  deploy-stage:
+    runs-on: self-hosted
+    needs: [docker, migration]
+    if: github.ref == 'refs/heads/stage'
+    steps:
+      - name: Get image tag
+        run: echo "${{ fromJSON(needs.docker.outputs.imageTag).tags[1] }}"
+      - name: Extract branch name
+        shell: bash
+        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+        id: extract_branch
+      - uses: actions/checkout@v3.1.0
+        name: Checkout ArgoCD manifests
+        with:
+          repository: Uspacy/argocd-applications
+          ref: 'main'
+          path: '.'
+          token: ${{ secrets.DOCKER_TOKEN }}
+      - name: Set foobar to cool
+        uses: mikefarah/yq@master
+        with:
+            cmd: yq -i '(.spec.source.directory.jsonnet.extVars.[] | select(.name == "dockerImage")).value="${{ fromJSON(needs.docker.outputs.imageTag).tags[1] }}"' '${{ steps.extract_branch.outputs.branch }}/${{ github.event.repository.name }}.yaml'
+      - uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+            commit_message: Automated Change
+            branch: main
+            commit_options: '--no-verify --signoff'
+            commit_user_name: My GitHub Actions Bot # defaults to "github-actions[bot]"
+            commit_user_email: ms@uspacy.com # defaults to "github-actions[bot]@users.noreply.github.com"
+            commit_author: Author <ms@uspacy.com> # defaults to author of the commit that triggered the runDjy
