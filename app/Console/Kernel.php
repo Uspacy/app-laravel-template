@@ -16,7 +16,7 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $schedule->call(new RefreshPortalToken)->everyFiveMinutes();
+        $schedule->call(new RefreshPortalToken)->everyThirtyMinutes();
     }
 
     /**

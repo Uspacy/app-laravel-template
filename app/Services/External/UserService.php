@@ -35,7 +35,7 @@ class UserService
 
         $response = Http::retry($this->repeatTimes, $this->sleepMilliseconds)
             ->timeout($this->timeout)->connectTimeout($this->connectTimeout)
-            ->withToken($portal->token)
+            ->withToken($portal->refresh_token)
             ->post($url);
 
         $result = $response->object();

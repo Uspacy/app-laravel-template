@@ -15,5 +15,5 @@ return [
     'sleep_milliseconds' => 600,
     'timeout' => 5, // in seconds
     'connect_timeout' => 5, // in seconds
-    'rerfesh_token_schedule' => 300, // in seconds
+    'rerfesh_token_schedule' => 3600, // in seconds
 ];
