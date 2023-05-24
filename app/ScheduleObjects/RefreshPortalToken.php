@@ -4,7 +4,6 @@ namespace App\ScheduleObjects;
 
 use App\Models\Portal;
 use App\Services\External\UserService as ExternalUserService;
-use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
 
@@ -22,9 +21,9 @@ class RefreshPortalToken
             try {
                 $tokenData = $externalUserService->refreshToken($portal);
 
-                $portal->token = $tokenData->token;
-                $portal->refresh_token = $tokenData->refresh_token;
-                $portal->expiry_date = $tokenData->expiry_date;
+                $portal->token = $tokenData->jwt;
+                $portal->refresh_token = $tokenData->refreshToken;
+                $portal->expiry_date = Carbon::now()->timestamp + $tokenData->expireInSeconds;
                 $portal->save();
             }
             catch (\Throwable $th) {
