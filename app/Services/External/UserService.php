@@ -31,7 +31,10 @@ class UserService
     public function refreshToken(Portal $portal)
     {
         $apiVersion = $this->apiVersion;
-        $url = 'https://' . $portal->domain .  "/company/{$apiVersion}/apps/refresh_token";
+        
+        // $url = 'https://' . $portal->domain .  "/company/{$apiVersion}/apps/refresh_token";
+        // TODO - probably use separate users-backend endpoint for future
+        $url = 'https://' . $portal->domain .  "/auth/{$apiVersion}/auth/refresh_token";
 
         $response = Http::retry($this->repeatTimes, $this->sleepMilliseconds)
             ->timeout($this->timeout)->connectTimeout($this->connectTimeout)
