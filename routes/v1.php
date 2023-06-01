@@ -17,5 +17,6 @@ use Illuminate\Support\Facades\Route;
 Route::group([
     'prefix' => 'portals'
 ], function () {
-    Route::post('/install', [PortalController::class, 'install']);
+    Route::post('install', [PortalController::class, 'install'])->name('portals_install');
+    Route::delete('uninstall', [PortalController::class, 'uninstall']);
 });
