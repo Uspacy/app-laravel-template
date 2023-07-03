@@ -43,7 +43,7 @@ class UserService
 
         $result = $response->object();
 
-        if (empty($result) || empty($result->token)) {
+        if (empty($result) || empty($result->jwt)) {
             throw new HttpResponseException(response()->json(
                 $response->json(), $response->status())
             );
