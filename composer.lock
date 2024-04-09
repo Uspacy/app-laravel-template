@@ -5723,16 +5723,16 @@
         },
         {
             "name": "laravel/pint",
-            "version": "v1.7.0",
+            "version": "v1.15.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/pint.git",
-                "reference": "d55381c73b7308e1b8a124084e804193a179092e"
+                "reference": "5f288b5e79938cc72f5c298d384e639de87507c6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/pint/zipball/d55381c73b7308e1b8a124084e804193a179092e",
-                "reference": "d55381c73b7308e1b8a124084e804193a179092e",
+                "url": "https://api.github.com/repos/laravel/pint/zipball/5f288b5e79938cc72f5c298d384e639de87507c6",
+                "reference": "5f288b5e79938cc72f5c298d384e639de87507c6",
                 "shasum": ""
             },
             "require": {
@@ -5743,13 +5743,13 @@
                 "php": "^8.1.0"
             },
             "require-dev": {
-                "friendsofphp/php-cs-fixer": "^3.14.4",
-                "illuminate/view": "^10.0.0",
-                "laravel-zero/framework": "^10.0.0",
-                "mockery/mockery": "^1.5.1",
-                "nunomaduro/larastan": "^2.4.0",
+                "friendsofphp/php-cs-fixer": "^3.52.1",
+                "illuminate/view": "^10.48.4",
+                "larastan/larastan": "^2.9.2",
+                "laravel-zero/framework": "^10.3.0",
+                "mockery/mockery": "^1.6.11",
                 "nunomaduro/termwind": "^1.15.1",
-                "pestphp/pest": "^1.22.4"
+                "pestphp/pest": "^2.34.5"
             },
             "bin": [
                 "builds/pint"
@@ -5785,7 +5785,7 @@
                 "issues": "https://github.com/laravel/pint/issues",
                 "source": "https://github.com/laravel/pint"
             },
-            "time": "2023-03-21T10:55:35+00:00"
+            "time": "2024-04-02T14:28:47+00:00"
         },
         {
             "name": "laravel/sail",
@@ -7652,5 +7652,5 @@
         "php": "^8.1"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.3.0"
+    "plugin-api-version": "2.6.0"
 }
