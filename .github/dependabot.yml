@@ -1,0 +1,17 @@
+# To get started with Dependabot version updates, you'll need to specify which
+# package ecosystems to update and where the package manifests are located.
+# Please see the documentation for all configuration options:
+# https://docs.github.com/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
+# Basic dependabot.yml file for a PHP Laravel project
+
+version: 2
+updates:
+  # Enable version updates for PHP packages managed by Composer
+  - package-ecosystem: "composer" # See documentation for possible values
+    directory: "/" # Location of the package configuration file, "/" for the repository root
+    schedule:
+      interval: "weekly" # How often to check for updates, options include "daily", "weekly", and "monthly"
+    open-pull-requests-limit: 10 # The maximum number of open pull requests Dependabot will create. Adjust as needed.
+    labels:
+      - "dependencies"
+      - "php"
