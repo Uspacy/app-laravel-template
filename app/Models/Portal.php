@@ -19,5 +19,7 @@ class Portal extends Model
         'refresh_token',
         'expiry_date',
         'domain',
+        'failed_token_refresh_attempts',
+        'is_active'
     ];
 }
