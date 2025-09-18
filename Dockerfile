@@ -31,9 +31,5 @@ RUN chown -R app.app ./
 #Switch user
 USER app
 
-#Fix storage directories
-RUN mkdir -p storage/framework/sessions
-RUN mkdir -p storage/framework/views
-RUN mkdir -p storage/framework/cache
 # Install packeges from composer
 RUN composer install
