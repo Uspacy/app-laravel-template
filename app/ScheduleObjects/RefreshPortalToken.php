@@ -13,10 +13,10 @@ class RefreshPortalToken
     {
         $externalUserService = new ExternalUserService();
 
-        $filterTime = Carbon::now()->timestamp + config('portal.rerfesh_token_schedule');
+        $filterTime = Carbon::now()->timestamp + config('portal.refresh_token_schedule');
 
         $portals = Portal::where('expiry_date', '<=', $filterTime)->get();
-        
+
         foreach ($portals as $portal) {
             try {
                 $tokenData = $externalUserService->refreshToken($portal);
