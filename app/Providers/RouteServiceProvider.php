@@ -21,7 +21,7 @@ class RouteServiceProvider extends ServiceProvider
         $apiVersion = config('api.version');
 
         $this->routes(function () use ($apiCode, $apiVersion) {
-           Route::middleware('api')->prefix("{$apiCode}/{$apiVersion}")
+            Route::middleware('api')->prefix("{$apiCode}/{$apiVersion}")
                 ->group(base_path("routes/{$apiVersion}.php"));
         });
     }
