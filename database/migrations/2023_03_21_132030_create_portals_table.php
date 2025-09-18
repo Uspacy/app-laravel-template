@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('portals', function (Blueprint $table) {
             $table->id();
-            $table->text('token', 10000);
-            $table->text('refresh_token', 10000);
+            $table->text('token');
+            $table->text('refresh_token');
             $table->integer('expiry_date')->index();
             $table->string('domain')->unique();
             $table->timestamps();
