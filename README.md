@@ -69,12 +69,12 @@ Since we're using the Sail image for the Laravel container, which is located in 
 the dependencies first. To do this, run the following command:
 
 ```bash
-docker run --rm \                                                       ✔  5s  
+docker run --rm \
     -u "$(id -u):$(id -g)" \
     -v "$(pwd):/var/www/html" \
     -w /var/www/html \
     laravelsail/php83-composer:latest \
-    composer istall --ignore-platform-reqs
+    composer install --ignore-platform-reqs
 ```
 
 ### 2.2. Run application
@@ -115,5 +115,5 @@ sail artisan migrate
 You can also execute the command directly in the container by running the following command:
 
 ```bash
-docker compose exec -it laravel.test php artisan route:list 
+docker compose exec -it laravel.test php artisan route:list
 ```
