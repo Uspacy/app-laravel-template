@@ -1,8 +1,7 @@
 <?php
 
-namespace App\Http\Controllers\V1;
+namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
 use App\Http\Requests\Portals\InstallPortalRequest;
 use App\Services\JwtService;
 use App\Services\Portal\PortalInstaller;

@@ -2,7 +2,6 @@
 
 namespace Tests\Feature;
 
-use App\Http\Middleware\ResolvePortal;
 use App\Models\Portal;
 use Firebase\JWT\JWT;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -23,7 +22,7 @@ class ResolvePortalTest extends TestCase
         config(['uspacy.uspacy_app_client_secret' => self::SECRET]);
 
         Route::middleware('portal')->get('/_test/portal', fn (Request $request) => [
-            'domain' => $request->attributes->get(ResolvePortal::ATTRIBUTE)->domain,
+            'domain' => \portal()->domain,
         ]);
     }
 
@@ -61,8 +60,8 @@ class ResolvePortalTest extends TestCase
 
     private function makeToken(?string $domain): string
     {
-        $headers = $domain ? ['domain' => $domain] : [];
+        $claims = ['iat' => time()] + ($domain ? ['domain' => $domain] : []);
 
-        return JWT::encode(['iat' => time()], self::SECRET, 'HS256', null, $headers);
+        return JWT::encode($claims, self::SECRET, 'HS256');
     }
 }

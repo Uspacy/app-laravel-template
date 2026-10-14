@@ -2,7 +2,6 @@
 
 namespace App\Http\Middleware;
 
-use App\Exceptions\JwtDecodeException;
 use App\Models\Portal;
 use App\Services\JwtService;
 use Closure;
@@ -10,9 +9,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Symfony\Component\HttpFoundation\Response;
 
-class ResolvePortal
+class ResolvePortalMiddleware
 {
-    public const ATTRIBUTE = 'portal';
+    public const PORTAL_ATTRIBUTE = 'portal';
 
     public function __construct(
         private JwtService $jwtService
@@ -26,13 +25,8 @@ class ResolvePortal
             \abort(401, 'Token is required');
         }
 
-        try {
-            $decoded = $this->jwtService->decode($token, config('uspacy.uspacy_app_client_secret'));
-        } catch (JwtDecodeException $ex) {
-            \abort(401, $ex->getMessage());
-        }
-
-        $domain = Arr::get($decoded, 'headers.domain');
+        $decoded = $this->jwtService->decode($token, config('uspacy.uspacy_app_client_secret'));
+        $domain = Arr::get($decoded, 'claims.domain');
 
         if (! $domain) {
             \abort(401, 'Domain is required in token header');
@@ -44,7 +38,7 @@ class ResolvePortal
             \abort(401, 'Portal not found');
         }
 
-        $request->attributes->set(self::ATTRIBUTE, $portal);
+        $request->attributes->set(self::PORTAL_ATTRIBUTE, $portal);
 
         return $next($request);
     }

@@ -12,6 +12,7 @@ class JwtService
 
     /**
      * @return array{headers: array, claims: array}
+     *
      * @throws JwtDecodeException
      */
     public function decode(string $token, #[\SensitiveParameter] string $secret): array
