@@ -1,10 +1,16 @@
 <?php
 
-use App\Services\Integration\Context\PortalContext;
+use App\Models\Portal;
 
-if (! function_exists('integration')) {
-    function integration()
+if (! function_exists('portal')) {
+    function portal()
     {
-        return app(PortalContext::class)->getIntegrationOrFail();
+        $portal = request()->attributes->get('portal');
+
+        if (! $portal instanceof Portal) {
+            \abort(401, 'Application portal not installed');
+        }
+
+        return $portal;
     }
 }

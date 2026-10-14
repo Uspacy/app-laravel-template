@@ -21,7 +21,7 @@ class PortalFactory extends Factory
             'domain' => $this->faker->domainName(),
             'token' => $this->faker->sha256(),
             'refresh_token' => $this->faker->sha256(),
-            'expiry_date' => $this->faker->dateTime()->add(new \DateInterval('P1H'))->getTimestamp(),
+            'expiry_date' => $this->faker->dateTime()->add(new \DateInterval('PT1H'))->getTimestamp(),
         ];
     }
 }
