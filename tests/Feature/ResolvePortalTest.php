@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Http\Middleware\ResolvePortalMiddleware;
 use App\Models\Portal;
 use Firebase\JWT\JWT;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -21,7 +22,7 @@ class ResolvePortalTest extends TestCase
 
         config(['uspacy.uspacy_app_client_secret' => self::SECRET]);
 
-        Route::middleware('portal')->get('/_test/portal', fn (Request $request) => [
+        Route::middleware(ResolvePortalMiddleware::class)->get('/_test/portal', fn (Request $request) => [
             'domain' => \portal()->domain,
         ]);
     }
