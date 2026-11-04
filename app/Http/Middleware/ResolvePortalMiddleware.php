@@ -11,7 +11,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class ResolvePortalMiddleware
 {
-    public const PORTAL_ATTRIBUTE = 'portal';
+    public const PORTAL_REQUEST_ATTRIBUTE = 'portal';
 
     public function __construct(
         private JwtService $jwtService
@@ -38,7 +38,7 @@ class ResolvePortalMiddleware
             \abort(401, 'Portal not found');
         }
 
-        $request->attributes->set(self::PORTAL_ATTRIBUTE, $portal);
+        $request->attributes->set(self::PORTAL_REQUEST_ATTRIBUTE, $portal);
 
         return $next($request);
     }
