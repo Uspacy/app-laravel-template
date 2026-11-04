@@ -11,6 +11,7 @@ return Application::configure(basePath: dirname(__DIR__))
         api: __DIR__.'/../routes/api.php',
         apiPrefix: '',
     )
+    ->withMiddleware()
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(fn () => true);
         $exceptions->level(JwtDecodeException::class, LogLevel::WARNING);

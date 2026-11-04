@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\Portal;
+namespace App\Services;
 
 use App\Models\Portal;
 
