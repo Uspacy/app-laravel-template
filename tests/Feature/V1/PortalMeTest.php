@@ -17,7 +17,7 @@ class PortalMeTest extends TestCase
     {
         parent::setUp();
 
-        config(['uspacy.uspacy_app_client_secret' => self::SECRET]);
+        config(['uspacy.app_client_secret' => self::SECRET]);
     }
 
     public function test_it_returns_current_portal(): void

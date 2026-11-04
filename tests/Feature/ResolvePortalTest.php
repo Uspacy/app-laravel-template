@@ -20,7 +20,7 @@ class ResolvePortalTest extends TestCase
     {
         parent::setUp();
 
-        config(['uspacy.uspacy_app_client_secret' => self::SECRET]);
+        config(['uspacy.app_client_secret' => self::SECRET]);
 
         Route::middleware(ResolvePortalMiddleware::class)->get('/_test/portal', fn (Request $request) => [
             'domain' => \portal()->domain,

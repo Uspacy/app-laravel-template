@@ -25,11 +25,11 @@ class PortalController extends Controller
             \abort(401, 'Token is required');
         }
 
-        $decoded = $this->jwtService->decode($token, config('uspacy.uspacy_app_client_secret'));
+        $decoded = $this->jwtService->decode($token, config('uspacy.app_client_secret'));
         $clientId = Arr::get($decoded, 'headers.client_id');
         $domain = Arr::get($decoded, 'headers.domain');
 
-        if ($clientId !== config('uspacy.uspacy_app_client_id')) {
+        if ($clientId !== config('uspacy.app_client_id')) {
             \abort(401, 'Invalid client ID');
         } elseif (! $domain) {
             \abort(401, 'Domain is required in token header');
@@ -53,7 +53,7 @@ class PortalController extends Controller
             \abort(401, 'Token is required');
         }
 
-        $decoded = $this->jwtService->decode($token, config('uspacy.uspacy_app_client_secret'));
+        $decoded = $this->jwtService->decode($token, config('uspacy.app_client_secret'));
         $domain = Arr::get($decoded, 'headers.domain');
 
         if (! $domain) {

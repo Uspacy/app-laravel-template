@@ -25,7 +25,7 @@ class ResolvePortalMiddleware
             \abort(401, 'Token is required');
         }
 
-        $decoded = $this->jwtService->decode($token, config('uspacy.uspacy_app_client_secret'));
+        $decoded = $this->jwtService->decode($token, config('uspacy.app_client_secret'));
         $domain = Arr::get($decoded, 'claims.domain');
 
         if (! $domain) {

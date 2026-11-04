@@ -20,8 +20,8 @@ class PortalInstallTest extends TestCase
         parent::setUp();
 
         config([
-            'uspacy.uspacy_app_client_id' => self::CLIENT_ID,
-            'uspacy.uspacy_app_client_secret' => self::SECRET,
+            'uspacy.app_client_id' => self::CLIENT_ID,
+            'uspacy.app_client_secret' => self::SECRET,
         ]);
     }
 
