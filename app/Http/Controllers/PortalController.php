@@ -1,9 +1,8 @@
 <?php
 
-namespace App\Http\Controllers\V1;
+namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
-use App\Http\Requests\V1\Portals\InstallPortalRequest;
+use App\Http\Requests\Portals\InstallPortalRequest;
 use App\Http\Resources\PortalResource;
 use App\Services\IntegrationTokenDecoder;
 use App\Services\PortalInstaller;

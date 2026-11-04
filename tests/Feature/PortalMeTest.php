@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature\V1;
+namespace Tests\Feature;
 
 use App\Models\Portal;
 use Firebase\JWT\JWT;
@@ -28,7 +28,7 @@ class PortalMeTest extends TestCase
         $token = JWT::encode(['iat' => time(), 'domain' => 'acme.uspacy.com', 'integration_code' => 'crm'], self::SECRET, 'HS256');
 
         $this->withToken($token)
-            ->getJson('/crm/v1/portals/me')
+            ->getJson('/crm/portals/me')
             ->assertOk()
             ->assertExactJson(['data' => [
                 'id' => $portal->id,
@@ -41,6 +41,6 @@ class PortalMeTest extends TestCase
 
     public function test_it_rejects_missing_token(): void
     {
-        $this->getJson('/crm/v1/portals/me')->assertUnauthorized();
+        $this->getJson('/crm/portals/me')->assertUnauthorized();
     }
 }

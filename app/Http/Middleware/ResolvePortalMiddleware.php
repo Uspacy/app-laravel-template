@@ -33,7 +33,7 @@ class ResolvePortalMiddleware
         }
 
         $portal = Portal::whereDomain($domain)
-            ->whereIntegrationCode('integration_code')
+            ->whereIntegrationCode($decoded['integration_code'])
             ->first();
 
         if (! $portal) {
