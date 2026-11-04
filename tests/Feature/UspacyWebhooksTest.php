@@ -12,7 +12,7 @@ class UspacyWebhooksTest extends TestCase
         Log::spy();
         $message = ['Type' => 'Notification', 'MessageId' => 'id-1', 'Message' => '{"chatId":"42"}'];
 
-        $this->call('POST', '/example/uspacy/webhooks', server: ['CONTENT_TYPE' => 'text/plain'], content: json_encode($message))
+        $this->call('POST', '/example-integration/uspacy/webhooks', server: ['CONTENT_TYPE' => 'text/plain'], content: json_encode($message))
             ->assertOk();
 
         Log::shouldHaveReceived('info')->with('SNS message received', $message)->once();
@@ -20,7 +20,7 @@ class UspacyWebhooksTest extends TestCase
 
     public function test_it_rejects_invalid_json(): void
     {
-        $this->call('POST', '/example/uspacy/webhooks', server: ['CONTENT_TYPE' => 'text/plain'], content: 'not json')
+        $this->call('POST', '/example-integration/uspacy/webhooks', server: ['CONTENT_TYPE' => 'text/plain'], content: 'not json')
             ->assertBadRequest();
     }
 }
