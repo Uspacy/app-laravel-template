@@ -1,9 +1,5 @@
 <?php
 
-use App\Http\Controllers\PortalController;
 use Illuminate\Support\Facades\Route;
 
-Route::prefix('/portals')->group(function () {
-    Route::post('/install', [PortalController::class, 'install']);
-    Route::delete('/uninstall', [PortalController::class, 'uninstall']);
-});
+Route::prefix('/v1')->group(base_path('routes/api/v1.php'));
