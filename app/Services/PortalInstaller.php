@@ -10,7 +10,7 @@ class PortalInstaller
         string $domain,
         string $token,
         string $refreshToken,
-        string $expiryDate
+        int $expiryDate
     ) {
         return Portal::updateOrCreate(
             [
@@ -19,7 +19,7 @@ class PortalInstaller
             [
                 'token' => $token,
                 'refresh_token' => $refreshToken,
-                'expiry_date_token' => $expiryDate,
+                'expiry_date' => $expiryDate,
             ]
         );
     }

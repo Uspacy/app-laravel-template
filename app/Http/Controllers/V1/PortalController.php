@@ -4,6 +4,7 @@ namespace App\Http\Controllers\V1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\V1\Portals\InstallPortalRequest;
+use App\Http\Resources\PortalResource;
 use App\Services\JwtService;
 use App\Services\PortalInstaller;
 use Illuminate\Http\JsonResponse;
@@ -38,7 +39,7 @@ class PortalController extends Controller
             $domain,
             $request->validated('token'),
             $request->validated('refresh_token'),
-            $request->validated('expiry_date_token')
+            $request->integer('expiry_date')
         );
 
         return response()->json(['message' => 'Portal installed successfully']);
@@ -62,5 +63,10 @@ class PortalController extends Controller
         $this->portalInstaller->uninstall($domain);
 
         return response()->json(['message' => 'Portal uninstalled successfully']);
+    }
+
+    public function me(): PortalResource
+    {
+        return \portal()->toResource();
     }
 }
