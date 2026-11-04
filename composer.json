@@ -68,6 +68,10 @@
         ],
         "pre-package-uninstall": [
             "Illuminate\\Foundation\\ComposerScripts::prePackageUninstall"
+        ],
+        "ide-helper:model": [
+            "@php artisan ide-helper:models -RW",
+            "@php ./vendor/bin/pint --dirty"
         ]
     },
     "extra": {
