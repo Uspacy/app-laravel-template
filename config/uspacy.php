@@ -1,6 +1,12 @@
 <?php
 
 return [
-    'app_client_id' => env('USPACY_APP_CLIENT_ID'),
-    'app_client_secret' => env('USPACY_APP_CLIENT_SECRET'),
+    // Keyed by URL pathname: /{pathname}/v1/...
+    'integrations' => [
+        'example' => [
+            'integration_code' => env('USPACY_EXAMPLE_INTEGRATION_CODE', 'example'),
+            'client_id' => env('USPACY_EXAMPLE_CLIENT_ID'),
+            'client_secret' => env('USPACY_EXAMPLE_CLIENT_SECRET'),
+        ],
+    ],
 ];

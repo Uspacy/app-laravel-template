@@ -14,10 +14,12 @@ return new class extends Migration
         Schema::create('portals', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
-            $table->string('domain')->unique();
+            $table->string('domain');
+            $table->string('integration_code');
             $table->timestamp('expiry_date');
             $table->text('token');
             $table->text('refresh_token');
+            $table->unique(['domain', 'integration_code']);
         });
     }
 

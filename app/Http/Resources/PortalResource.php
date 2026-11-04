@@ -16,6 +16,7 @@ class PortalResource extends JsonResource
         return [
             'id' => $this->resource->id,
             'domain' => $this->resource->domain,
+            'integration_code' => $this->resource->integration_code,
             'created_at' => $this->resource->created_at,
             'updated_at' => $this->resource->updated_at,
         ];

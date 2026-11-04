@@ -15,6 +15,7 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property string $domain
+ * @property string $integration_code
  * @property Carbon $expiry_date
  * @property string $token
  * @property string $refresh_token
@@ -27,6 +28,7 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Portal whereDomain($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Portal whereExpiryDate($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Portal whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Portal whereIntegrationCode($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Portal whereRefreshToken($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Portal whereToken($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Portal whereUpdatedAt($value)
@@ -42,6 +44,7 @@ class Portal extends Model
 
     protected $fillable = [
         'domain',
+        'integration_code',
         'token',
         'refresh_token',
         'expiry_date',
