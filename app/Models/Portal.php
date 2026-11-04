@@ -63,4 +63,9 @@ class Portal extends Model
             'expiry_date' => 'datetime',
         ];
     }
+
+    public function isTokenExpired(): bool
+    {
+        return ! $this->expiry_date->isFuture();
+    }
 }

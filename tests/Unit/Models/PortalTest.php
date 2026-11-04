@@ -29,4 +29,18 @@ class PortalTest extends TestCase
         $this->assertStringNotContainsString('secret-token', $json);
         $this->assertStringNotContainsString('secret-refresh-token', $json);
     }
+
+    public function test_token_is_not_expired_before_expiry_date(): void
+    {
+        $portal = Portal::factory()->make(['expiry_date' => now()->addMinute()]);
+
+        $this->assertFalse($portal->isTokenExpired());
+    }
+
+    public function test_token_is_expired_after_expiry_date(): void
+    {
+        $portal = Portal::factory()->make(['expiry_date' => now()->subMinute()]);
+
+        $this->assertTrue($portal->isTokenExpired());
+    }
 }
