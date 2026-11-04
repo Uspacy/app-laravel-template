@@ -8,7 +8,6 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Saloon\Http\Faking\MockClient;
 use Saloon\Http\Faking\MockResponse;
 use Tests\TestCase;
-use Uspacy\SDK\Http\Client\Requests\Auth\ApplicationSignInRequest;
 
 class UspacySDKFactoryTest extends TestCase
 {
@@ -29,8 +28,9 @@ class UspacySDKFactoryTest extends TestCase
         $portal = Portal::factory()->create(['domain' => 'acme.uspacy.com', 'integration_code' => 'crm', 'token' => 'stale']);
         $sdk = (new UspacySDKFactory)->fromPortal($portal);
         $sdk->withMockClient(new MockClient([
-            '*/some/endpoint' => MockResponse::make([], 401),
-            ApplicationSignInRequest::class => MockResponse::make(['jwt' => 'fresh', 'refreshToken' => 'fresh-refresh', 'expireInSeconds' => 3600]),
+            MockResponse::make([], 401),
+            MockResponse::make(['jwt' => 'fresh', 'refreshToken' => 'fresh-refresh', 'expireInSeconds' => 3600]),
+            MockResponse::make([]),
         ]));
 
         $sdk->http()->get('/some/endpoint');
