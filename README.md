@@ -108,6 +108,28 @@ https://your-server.com/example-integration/v1/portals/uninstall
 https://your-server.com/example-integration/v1/uspacy/webhooks
 ```
 
+## Calling the Uspacy API
+
+Use [uspacy-php-sdk](https://github.com/Uspacy/uspacy-php-sdk) through `UspacySDKFactory`. It signs in with the portal's tokens and refreshes them on its own:
+
+```php
+$sdk = app(UspacySDKFactory::class)->fromPortal(\portal());
+
+// CRM
+$deals = $sdk->crmDeals()->getEntities(['page' => 1, 'list' => 10]);
+$deal = $sdk->crmDeals()->createEntity(['title' => 'New deal']);
+
+// Tasks
+$tasks = $sdk->tasks()->getTasks(['page' => 1]);
+$task = $sdk->tasks()->createTask(['title' => 'Call the client', 'responsibleId' => 7]);
+
+// Messenger
+$chats = $sdk->messenger()->getChats(['status' => 'active']);
+$sdk->messenger()->createMessage(['chatId' => $chats[0]->id, 'text' => 'Hello']);
+```
+
+See the SDK's [README](https://github.com/Uspacy/uspacy-php-sdk#readme) for all services and payloads. A working example is `CrmDealsController`.
+
 ## Webhooks
 
 Your app gets webhooks only after it is subscribed to them. You can't subscribe from the app or through an API: you ask the Uspacy team, and they set up the subscription by hand on their side. Ask for each type you need separately. The types are:
@@ -138,4 +160,5 @@ vendor/bin/pint --dirty      # format the code
 ## Resources
 
 - [Uspacy API reference](https://uspacy.readme.io/reference/introduction)
+- [uspacy-php-sdk](https://github.com/Uspacy/uspacy-php-sdk): PHP client for the Uspacy API, used by this template
 - [App development for the Marketplace using external lines](https://uspacy.com/support/knowledgebase/app-development-for-a-marketplace-using-external-lines-en/)
