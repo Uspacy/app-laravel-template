@@ -11,10 +11,12 @@ Example/template Laravel 13 (PHP 8.4) backend for a Uspacy CRM integration app. 
 ```bash
 composer setup                              # install, .env, key, migrate (SQLite by default)
 php artisan serve
+composer checks                             # lint, analyse, test (same as CI)
 composer test                               # or: php artisan test
 php artisan test --filter=test_method_name  # single test
 php artisan test tests/Feature/CrmDealsTest.php
 vendor/bin/pint --dirty                     # format (Laravel preset)
+composer lint                               # Pint in test mode
 composer analyse                            # Larastan (level 8, phpstan.neon)
 composer ide-helper:model                   # regenerate model PHPDoc, then pint
 ```

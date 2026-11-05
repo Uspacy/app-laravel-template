@@ -1,0 +1,36 @@
+name: Checks
+
+on:
+  pull_request:
+    branches: [main, stage]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.4"
+          extensions: sqlite3
+          coverage: none
+
+      - name: Set up project
+        run: composer setup --no-interaction
+
+      - name: Lint (Pint)
+        run: composer lint
+
+      - name: Static analysis (Larastan)
+        run: composer analyse
+
+      - name: Tests
+        run: composer test
