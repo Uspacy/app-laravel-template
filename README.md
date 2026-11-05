@@ -20,6 +20,7 @@ Requires PHP 8.4 and Composer.
 ```mermaid
 sequenceDiagram
     actor Admin as Portal admin / owner
+    actor User as Portal user
     participant S as Uspacy internal service
     participant A as This backend
     participant DB as Database
@@ -35,6 +36,16 @@ sequenceDiagram
     else JWT valid
         A->>DB: Create or update the portal (domain + integration_code)<br/>and store the tokens (encrypted)
         A-->>S: 200 Portal installed successfully
+    end
+
+    Note over User,A: A portal user calls the backend directly
+    User->>A: GET /{integration}/v1/portals/me<br/>Authorization: Bearer JWT
+    A->>A: Verify the JWT signature and integration_code
+    A->>DB: Find the portal by domain + integration_code from the JWT
+    alt JWT invalid or portal not installed
+        A-->>User: 401 Unauthorized
+    else Portal found
+        A-->>User: 200 Portal: id, domain, integration_code
     end
 
     Note over A,API: Later, whenever the app needs it
