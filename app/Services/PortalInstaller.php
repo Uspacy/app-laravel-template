@@ -12,7 +12,7 @@ class PortalInstaller
         string $token,
         string $refreshToken,
         int $expiryDate
-    ) {
+    ): Portal {
         return Portal::updateOrCreate(
             [
                 'domain' => $domain,
@@ -26,7 +26,7 @@ class PortalInstaller
         );
     }
 
-    public function uninstall(string $domain, string $integrationCode)
+    public function uninstall(string $domain, string $integrationCode): int
     {
         return Portal::where('domain', $domain)
             ->where('integration_code', $integrationCode)

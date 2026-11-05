@@ -3,11 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\Portals\InstallPortalRequest;
-use App\Http\Resources\PortalResource;
 use App\Services\IntegrationTokenDecoder;
 use App\Services\PortalInstaller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Arr;
 
 class PortalController extends Controller
@@ -41,7 +41,7 @@ class PortalController extends Controller
         return response()->json(['message' => 'Portal uninstalled successfully']);
     }
 
-    public function me(): PortalResource
+    public function me(): JsonResource
     {
         return \portal()->toResource();
     }

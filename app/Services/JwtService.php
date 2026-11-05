@@ -11,7 +11,7 @@ class JwtService
     private const ALGORITHM = 'HS256';
 
     /**
-     * @return array{headers: array, claims: array}
+     * @return array{headers: array<string, mixed>, claims: array<string, mixed>}
      *
      * @throws JwtDecodeException
      */

@@ -15,6 +15,7 @@ composer test                               # or: php artisan test
 php artisan test --filter=test_method_name  # single test
 php artisan test tests/Feature/CrmDealsTest.php
 vendor/bin/pint --dirty                     # format (Laravel preset)
+composer analyse                            # Larastan (level 8, phpstan.neon)
 composer ide-helper:model                   # regenerate model PHPDoc, then pint
 ```
 

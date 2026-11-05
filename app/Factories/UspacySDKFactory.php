@@ -13,11 +13,13 @@ class UspacySDKFactory
     public function fromPortal(Portal $portal): UspacySDK
     {
         [$clientId, $clientSecret] = $this->credentials($portal);
-        $storeTokens = fn (Tokens $tokens) => $portal->update([
-            'token' => $tokens->token,
-            'refresh_token' => $tokens->refreshToken,
-            'expiry_date' => now()->addSeconds((int) $tokens->expiresIn),
-        ]);
+        $storeTokens = function (Tokens $tokens) use ($portal): void {
+            $portal->update([
+                'token' => $tokens->token,
+                'refresh_token' => $tokens->refreshToken,
+                'expiry_date' => now()->addSeconds((int) $tokens->expiresIn),
+            ]);
+        };
 
         $sdk = new UspacySDK("https://{$portal->domain}", $portal->token);
 
@@ -37,7 +39,7 @@ class UspacySDKFactory
      */
     private function credentials(Portal $portal): array
     {
-        $integration = collect(config('uspacy.integrations'))
+        $integration = collect(config()->array('uspacy.integrations'))
             ->firstWhere('integration_code', $portal->integration_code);
 
         if (empty($integration['client_id']) || empty($integration['client_secret'])) {
