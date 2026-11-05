@@ -84,8 +84,6 @@ USPACY_EXAMPLE_CLIENT_ID=...
 USPACY_EXAMPLE_CLIENT_SECRET=...
 ```
 
-Uspacy must be able to reach the server, so it needs a public HTTPS URL. For local testing, use a tunnel such as ngrok or Cloudflare Tunnel.
-
 ## Endpoints
 
 Every URL starts with the integration key, then the API version:
