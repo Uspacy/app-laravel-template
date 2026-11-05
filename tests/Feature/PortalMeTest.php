@@ -28,7 +28,7 @@ class PortalMeTest extends TestCase
         $token = JWT::encode(['iat' => time()], self::SECRET, 'HS256', head: ['domain' => 'acme.uspacy.com', 'integration_code' => 'crm']);
 
         $this->withToken($token)
-            ->getJson('/crm/portals/me')
+            ->getJson('/crm/v1/portals/me')
             ->assertOk()
             ->assertExactJson(['data' => [
                 'id' => $portal->id,
@@ -41,6 +41,6 @@ class PortalMeTest extends TestCase
 
     public function test_it_rejects_missing_token(): void
     {
-        $this->getJson('/crm/portals/me')->assertUnauthorized();
+        $this->getJson('/crm/v1/portals/me')->assertUnauthorized();
     }
 }

@@ -1,7 +1,7 @@
 <?php
 
 return [
-    // Keyed by URL pathname: /{pathname}/...
+    // Keyed by URL pathname: /{pathname}/v1/...
     'integrations' => [
         'example-integration' => [
             'integration_code' => env('USPACY_EXAMPLE_INTEGRATION_CODE', 'example'),

@@ -30,7 +30,7 @@ class PortalInstallTest extends TestCase
         $expiryDate = now()->addHour()->startOfSecond();
 
         $this->withToken($this->makeToken('acme.uspacy.com'))
-            ->postJson('/crm/portals/install', [
+            ->postJson('/crm/v1/portals/install', [
                 'token' => 'access',
                 'refresh_token' => 'refresh',
                 'expiry_date' => $expiryDate->getTimestamp(),
@@ -47,7 +47,7 @@ class PortalInstallTest extends TestCase
     {
         foreach (['crm', 'other'] as $integrationCode) {
             $this->withToken($this->makeToken('acme.uspacy.com', $integrationCode))
-                ->postJson("/{$integrationCode}/portals/install", [
+                ->postJson("/{$integrationCode}/v1/portals/install", [
                     'token' => "access-{$integrationCode}",
                     'refresh_token' => 'refresh',
                     'expiry_date' => now()->addHour()->getTimestamp(),
@@ -61,7 +61,7 @@ class PortalInstallTest extends TestCase
     public function test_it_rejects_install_with_foreign_client_id(): void
     {
         $this->withToken($this->makeToken('acme.uspacy.com', 'crm', clientId: 'other-client'))
-            ->postJson('/crm/portals/install', [
+            ->postJson('/crm/v1/portals/install', [
                 'token' => 'access',
                 'refresh_token' => 'refresh',
                 'expiry_date' => now()->addHour()->getTimestamp(),
@@ -72,7 +72,7 @@ class PortalInstallTest extends TestCase
     public function test_it_rejects_install_without_integration_code(): void
     {
         $this->withToken($this->makeToken('acme.uspacy.com', null))
-            ->postJson('/crm/portals/install', [
+            ->postJson('/crm/v1/portals/install', [
                 'token' => 'access',
                 'refresh_token' => 'refresh',
                 'expiry_date' => now()->addHour()->getTimestamp(),
@@ -86,7 +86,7 @@ class PortalInstallTest extends TestCase
         Portal::factory()->create(['domain' => 'acme.uspacy.com', 'integration_code' => 'other']);
 
         $this->withToken($this->makeToken('acme.uspacy.com'))
-            ->deleteJson('/crm/portals/uninstall')
+            ->deleteJson('/crm/v1/portals/uninstall')
             ->assertOk();
 
         $this->assertDatabaseMissing('portals', ['domain' => 'acme.uspacy.com', 'integration_code' => 'crm']);

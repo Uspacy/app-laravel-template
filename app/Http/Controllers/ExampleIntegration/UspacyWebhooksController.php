@@ -19,7 +19,9 @@ class UspacyWebhooksController extends Controller
         $integration = config('uspacy.integrations')[$integration] ?? null;
 
         if (! $integration) {
-            \abort(404, 'Integration not found');
+            Log::warning('SNS message received for unconfigured integration', ['integration' => $integration]);
+
+            return response()->noContent(200);
         }
 
         // SNS sends JSON with Content-Type: text/plain, so $request->json() stays empty.
@@ -32,6 +34,13 @@ class UspacyWebhooksController extends Controller
         }
 
         $portalDomain = $message['data']['domain'] ?? null;
+
+        if (! $portalDomain) {
+            Log::warning('SNS message missing portal domain', ['message' => $message]);
+
+            return response()->noContent(200);
+        }
+
         $portal = Portal::whereDomain($portalDomain)
             ->whereIntegrationCode($integration['integration_code'])
             ->first();

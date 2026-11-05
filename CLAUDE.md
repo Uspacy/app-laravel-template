@@ -18,22 +18,20 @@ vendor/bin/pint --dirty                     # format (Laravel preset)
 composer ide-helper:model                   # regenerate model PHPDoc, then pint
 ```
 
-Tests use in-memory SQLite (phpunit.xml). CI runs `php artisan test --env=testing` on PRs to `main`.
-
 ## Architecture
 
-**Multi-integration routing.** Every route starts with `/{integration}`, a key of `config('uspacy.integrations')` ([config/uspacy.php](config/uspacy.php)). Each entry holds `integration_code`, `client_id`, `client_secret` from env. One deployment can serve several Uspacy apps; add one by adding a config entry + env vars.
+**Multi-integration routing.** Every route starts with `/{integration}/v1`, a key of `config('uspacy.integrations')` ([config/uspacy.php](config/uspacy.php)). Each entry holds `integration_code`, `client_id`, `client_secret` from env. One deployment can serve several Uspacy apps; add one by adding a config entry + env vars.
 
 **Portal = one installation.** `Portal` model is unique per `(domain, integration_code)` and stores the Uspacy access/refresh tokens (encrypted casts) and `expiry_date`.
 
 **Auth flow.** Uspacy sends a HS256 JWT as the Bearer token, signed with the integration's `client_secret`. `domain`, `integration_code`, `client_id` are read from the JWT **headers**, not claims.
 - `IntegrationTokenDecoder` resolves the integration by route pathname, verifies the signature (`JwtService`), and checks `integration_code`. Decode failures throw `JwtDecodeException` → 401 (configured in [bootstrap/app.php](bootstrap/app.php)).
-- `POST /{integration}/portals/install` / `DELETE .../uninstall` (`PortalController`) additionally check `client_id` and upsert/delete the portal via `PortalInstaller`.
+- `POST /{integration}/v1/portals/install` / `DELETE .../uninstall` (`PortalController`) additionally check `client_id` and upsert/delete the portal via `PortalInstaller`.
 - `ResolvePortalMiddleware` decodes the JWT, loads the portal, and stores it in the request-scoped `PortalContext`; controllers read it with the global `portal()` helper ([app/helpers.php](app/helpers.php)).
 
 **Calling Uspacy.** `UspacySDKFactory::fromPortal()` builds a `UspacySDK` for `https://{domain}`; signs in with client credentials if the stored token is expired, and attaches `RefreshApplicationTokenMiddleware` that persists refreshed tokens back to the portal. Example usage: `CrmDealsController`.
 
-**Webhooks (SNS).** `POST /{integration}/uspacy/webhooks` (`UspacyWebhooksController`, restricted to `example-integration`) is a test `sns_subscription_url`: it parses the raw body (SNS posts JSON as `text/plain`), finds the portal by `data.domain`, and logs the message. No SNS signature verification or subscription confirmation yet. Always returns 200 so SNS does not retry.
+**Webhooks (SNS).** `POST /{integration}/v1/uspacy/webhooks` (`UspacyWebhooksController`, restricted to `example-integration`) is a test `sns_subscription_url`: it parses the raw body (SNS posts JSON as `text/plain`), finds the portal by `data.domain`, and logs the message. No SNS signature verification or subscription confirmation yet. Always returns 200 so SNS does not retry.
 
 Integration-specific example code lives under `App\Http\Controllers\ExampleIntegration`.
 

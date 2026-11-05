@@ -58,6 +58,6 @@ class UspacyWebhooksTest extends TestCase
     private function postWebhook(string $integration, string $content): TestResponse
     {
         // SNS sends JSON with Content-Type: text/plain
-        return $this->call('POST', "/{$integration}/uspacy/webhooks", server: ['CONTENT_TYPE' => 'text/plain'], content: $content);
+        return $this->call('POST', "/{$integration}/v1/uspacy/webhooks", server: ['CONTENT_TYPE' => 'text/plain'], content: $content);
     }
 }

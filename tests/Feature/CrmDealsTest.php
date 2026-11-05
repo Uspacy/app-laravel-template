@@ -40,7 +40,7 @@ class CrmDealsTest extends TestCase
         $token = JWT::encode(['iat' => time()], self::SECRET, 'HS256', head: ['domain' => 'acme.uspacy.com', 'integration_code' => 'crm']);
 
         $this->withToken($token)
-            ->getJson('/crm/crm/deals')
+            ->getJson('/crm/v1/crm/deals')
             ->assertOk()
             ->assertExactJson([
                 'data' => [['id' => 1, 'title' => 'Deal']],
@@ -52,6 +52,6 @@ class CrmDealsTest extends TestCase
 
     public function test_it_rejects_missing_token(): void
     {
-        $this->getJson('/crm/crm/deals')->assertUnauthorized();
+        $this->getJson('/crm/v1/crm/deals')->assertUnauthorized();
     }
 }
