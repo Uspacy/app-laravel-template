@@ -25,8 +25,8 @@ class ResolvePortalMiddleware
             \abort(401, 'Token is required');
         }
 
-        $decoded = $this->integrationTokenDecoder->decode($token, $request->route('integration'), 'claims.integration_code');
-        $domain = Arr::get($decoded, 'claims.domain');
+        $decoded = $this->integrationTokenDecoder->decode($token, $request->route('integration'), 'headers.integration_code');
+        $domain = Arr::get($decoded, 'headers.domain');
 
         if (! $domain) {
             \abort(401, 'Domain is required in token claims');

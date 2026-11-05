@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ExampleIntegration\CrmDealsController;
 use App\Http\Controllers\ExampleIntegration\UspacyWebhooksController;
 use App\Http\Controllers\PortalController;
 use App\Http\Middleware\ResolvePortalMiddleware;
@@ -16,6 +17,9 @@ Route::prefix('/{integration}/portals')->group(function () {
     // Current portal from the JWT
     Route::get('/me', [PortalController::class, 'me'])->middleware(ResolvePortalMiddleware::class);
 });
+
+// Example Uspacy API call on behalf of the current portal
+Route::get('/{integration}/crm/deals', [CrmDealsController::class, 'index'])->middleware(ResolvePortalMiddleware::class);
 
 // Test sns_subscription_url: logs SNS messages, no signature check
 Route::post('/example-integration/uspacy/webhooks', [UspacyWebhooksController::class, 'handle']);
