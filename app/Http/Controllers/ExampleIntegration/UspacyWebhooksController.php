@@ -16,9 +16,9 @@ class UspacyWebhooksController extends Controller
 
     public function handle(string $integration): Response
     {
-        $integration = config('uspacy.integrations')[$integration] ?? null;
+        $integrationConfig = config('uspacy.integrations')[$integration] ?? null;
 
-        if (! $integration) {
+        if (! $integrationConfig) {
             Log::warning('SNS message received for unconfigured integration', ['integration' => $integration]);
 
             return response()->noContent(200);
@@ -42,7 +42,7 @@ class UspacyWebhooksController extends Controller
         }
 
         $portal = Portal::whereDomain($portalDomain)
-            ->whereIntegrationCode($integration['integration_code'])
+            ->whereIntegrationCode($integrationConfig['integration_code'])
             ->first();
 
         if (! $portal) {

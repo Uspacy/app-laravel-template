@@ -17,7 +17,7 @@ class PortalController extends Controller
         private IntegrationTokenDecoder $integrationTokenDecoder
     ) {}
 
-    public function install(InstallPortalRequest $request)
+    public function install(InstallPortalRequest $request): JsonResponse
     {
         [$domain, $integrationCode] = $this->resolveInstallationTarget($request);
 
