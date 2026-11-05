@@ -48,7 +48,7 @@ composer setup        # installs dependencies, creates .env, generates the app k
 php artisan serve     # http://localhost:8000
 ```
 
-In `.env`, fill in the credentials of your app from the Uspacy developer settings:
+You can't register an app in Uspacy yourself: you ask the Uspacy team to do it. They set up the app on their side and send you its credentials. Put them in `.env`:
 
 ```dotenv
 USPACY_EXAMPLE_INTEGRATION_CODE=example
@@ -72,7 +72,7 @@ Every URL starts with the integration key, then the API version:
 
 Uspacy needs only `install` and `uninstall`. The CRM deals and webhook routes are examples: replace them with your own app's logic, or delete them.
 
-`{integration}` is a key in [config/uspacy.php](config/uspacy.php), for example `example-integration`. In the Uspacy app settings, use URLs like:
+`{integration}` is a key in [config/uspacy.php](config/uspacy.php), for example `example-integration`. When you ask Uspacy to register your app, send them URLs like these:
 
 ```
 https://your-server.com/example-integration/v1/portals/install
@@ -82,7 +82,7 @@ https://your-server.com/example-integration/v1/uspacy/webhooks
 
 ## Webhooks
 
-Your app gets webhooks only after it subscribes to them, and it subscribes to each type separately. The types are:
+Your app gets webhooks only after it is subscribed to them. You can't subscribe from the app or through an API: you ask the Uspacy team, and they set up the subscription by hand on their side. Ask for each type you need separately. The types are:
 
 - `crm`
 - `tasks`
