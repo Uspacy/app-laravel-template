@@ -29,7 +29,7 @@ composer ide-helper:model                   # regenerate model PHPDoc, then pint
 **Auth flow.** Uspacy sends a HS256 JWT as the Bearer token, signed with the integration's `client_secret`. `domain`, `integration_code`, `client_id` are read from the JWT **headers**, not claims.
 - `IntegrationTokenDecoder` resolves the integration by route pathname, verifies the signature (`JwtService`), and checks `integration_code`. Decode failures throw `JwtDecodeException` → 401 (configured in [bootstrap/app.php](bootstrap/app.php)).
 - `POST /{integration}/v1/portals/install` / `DELETE .../uninstall` (`PortalController`) additionally check `client_id` and upsert/delete the portal via `PortalInstaller`.
-- `ResolvePortalMiddleware` decodes the JWT, loads the portal, and stores it in the request-scoped `PortalContext`; controllers read it with the global `portal()` helper ([app/helpers.php](app/helpers.php)).
+- Portal users can also call routes directly (e.g. `/portals/me`, `/crm/deals`) with such a JWT; `ResolvePortalMiddleware` decodes the JWT, loads the portal, and stores it in the request-scoped `PortalContext`; controllers read it with the global `portal()` helper ([app/helpers.php](app/helpers.php)).
 
 **Calling Uspacy.** `UspacySDKFactory::fromPortal()` builds a `UspacySDK` for `https://{domain}`; signs in with client credentials if the stored token is expired, and attaches `RefreshApplicationTokenMiddleware`, which on a `401` signs in again, retries the request, and persists the new tokens back to the portal. Example usage: `CrmDealsController`.
 
