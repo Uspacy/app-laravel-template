@@ -31,7 +31,7 @@ composer ide-helper:model                   # regenerate model PHPDoc, then pint
 - `POST /{integration}/v1/portals/install` / `DELETE .../uninstall` (`PortalController`) additionally check `client_id` and upsert/delete the portal via `PortalInstaller`.
 - `ResolvePortalMiddleware` decodes the JWT, loads the portal, and stores it in the request-scoped `PortalContext`; controllers read it with the global `portal()` helper ([app/helpers.php](app/helpers.php)).
 
-**Calling Uspacy.** `UspacySDKFactory::fromPortal()` builds a `UspacySDK` for `https://{domain}`; signs in with client credentials if the stored token is expired, and attaches `RefreshApplicationTokenMiddleware` that persists refreshed tokens back to the portal. Example usage: `CrmDealsController`.
+**Calling Uspacy.** `UspacySDKFactory::fromPortal()` builds a `UspacySDK` for `https://{domain}`; signs in with client credentials if the stored token is expired, and attaches `RefreshApplicationTokenMiddleware`, which on a `401` signs in again, retries the request, and persists the new tokens back to the portal. Example usage: `CrmDealsController`.
 
 **Webhooks (SNS).** `POST /{integration}/v1/uspacy/webhooks` (`UspacyWebhooksController`, restricted to `example-integration`) is a test `sns_subscription_url`: it parses the raw body (SNS posts JSON as `text/plain`), finds the portal by `data.domain`, and logs the message. No SNS signature verification or subscription confirmation yet. Always returns 200 so SNS does not retry.
 

@@ -12,7 +12,7 @@ Requires PHP 8.4 and Composer.
 
 1. **Registration.** The Uspacy team registers your app on request. See [Registering your app](#registering-your-app). After that, the app appears in the Uspacy Marketplace.
 2. **Install.** A portal admin or owner clicks **Install** in the Marketplace. Uspacy's internal service then calls this backend at `POST /{integration}/v1/portals/install`. The request carries a JWT signed with your `client_secret`, plus the portal's API tokens. The backend checks the JWT and saves the portal along with its tokens.
-3. **Work.** With the saved token, the backend calls the Uspacy API on the portal's behalf. It can do whatever your app needs, for example create chats and messages, CRM entities, tasks and activities. The token is refreshed automatically when it expires.
+3. **Work.** With the saved token, the backend calls the Uspacy API on the portal's behalf. It can do whatever your app needs, for example create chats and messages, CRM entities, tasks and activities. A new token is fetched automatically, in two cases: before a request, if the stored token has already expired, and when the API returns `401`, after which the request is retried with the new token. Each new token is saved back to the portal.
 4. **Events (optional).** If your app is subscribed to webhooks, Uspacy sends events through AWS SNS to `POST /{integration}/v1/uspacy/webhooks`. See [Webhooks](#webhooks).
 5. **Uninstall.** A portal admin or owner clicks **Uninstall**. Uspacy's internal service calls `DELETE /{integration}/v1/portals/uninstall`, and the backend deletes the portal.
 
@@ -38,7 +38,7 @@ sequenceDiagram
 
     Note over A,API: Later, whenever the app needs it
     A->>DB: Load the portal and its token
-    A->>API: Create a chat, a CRM entity, a task...<br/>(token refreshed automatically when expired)
+    A->>API: Create a chat, a CRM entity, a task...<br/>(new token if expired or on 401)
 
     Note over Admin,A: Uninstall follows the same path
     Admin->>S: Clicks "Uninstall" in the Marketplace
