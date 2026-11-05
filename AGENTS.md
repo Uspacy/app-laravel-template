@@ -24,6 +24,8 @@ composer ide-helper:model                   # regenerate model PHPDoc, then pint
 
 **Portal = one installation.** `Portal` model is unique per `(domain, integration_code)` and stores the Uspacy access/refresh tokens (encrypted casts) and `expiry_date`.
 
+**Lifecycle.** The Uspacy team registers each app by hand, on Stage and then production. Each environment has its own `client_id`/`client_secret`, but `integration_code` is the same everywhere. When a portal admin or owner clicks Install/Uninstall in the Marketplace, a Uspacy internal service calls `install`/`uninstall` here. Webhook subscriptions are also set up by hand on the Uspacy side.
+
 **Auth flow.** Uspacy sends a HS256 JWT as the Bearer token, signed with the integration's `client_secret`. `domain`, `integration_code`, `client_id` are read from the JWT **headers**, not claims.
 - `IntegrationTokenDecoder` resolves the integration by route pathname, verifies the signature (`JwtService`), and checks `integration_code`. Decode failures throw `JwtDecodeException` → 401 (configured in [bootstrap/app.php](bootstrap/app.php)).
 - `POST /{integration}/v1/portals/install` / `DELETE .../uninstall` (`PortalController`) additionally check `client_id` and upsert/delete the portal via `PortalInstaller`.
