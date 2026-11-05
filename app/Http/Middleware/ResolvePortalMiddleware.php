@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use App\Models\Portal;
 use App\Services\IntegrationTokenDecoder;
+use App\Support\PortalContext;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
@@ -11,10 +12,9 @@ use Symfony\Component\HttpFoundation\Response;
 
 class ResolvePortalMiddleware
 {
-    public const PORTAL_REQUEST_ATTRIBUTE = 'portal';
-
     public function __construct(
-        private IntegrationTokenDecoder $integrationTokenDecoder
+        private IntegrationTokenDecoder $integrationTokenDecoder,
+        private PortalContext $portalContext,
     ) {}
 
     public function handle(Request $request, Closure $next): Response
@@ -40,7 +40,7 @@ class ResolvePortalMiddleware
             \abort(401, 'Portal not found');
         }
 
-        $request->attributes->set(self::PORTAL_REQUEST_ATTRIBUTE, $portal);
+        $this->portalContext->set($portal);
 
         return $next($request);
     }

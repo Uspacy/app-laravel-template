@@ -1,17 +1,11 @@
 <?php
 
-use App\Http\Middleware\ResolvePortalMiddleware;
 use App\Models\Portal;
+use App\Support\PortalContext;
 
 if (! function_exists('portal')) {
-    function portal()
+    function portal(): Portal
     {
-        $portal = \request()->attributes->get(ResolvePortalMiddleware::PORTAL_REQUEST_ATTRIBUTE);
-
-        if (! $portal instanceof Portal) {
-            \abort(401, 'Application portal not installed');
-        }
-
-        return $portal;
+        return \app(PortalContext::class)->get();
     }
 }

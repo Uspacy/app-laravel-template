@@ -37,7 +37,7 @@ class CrmDealsTest extends TestCase
         $mock = MockClient::global([
             MockResponse::make(['data' => [['id' => 1, 'title' => 'Deal']], 'meta' => ['total' => 1, 'page' => 1, 'list' => 10]]),
         ]);
-        $token = JWT::encode(['iat' => time(), 'domain' => 'acme.uspacy.com', 'integration_code' => 'crm'], self::SECRET, 'HS256');
+        $token = JWT::encode(['iat' => time()], self::SECRET, 'HS256', head: ['domain' => 'acme.uspacy.com', 'integration_code' => 'crm']);
 
         $this->withToken($token)
             ->getJson('/crm/crm/deals')

@@ -33,7 +33,7 @@ class ResolvePortalTest extends TestCase
         ]);
     }
 
-    public function test_it_adds_portal_to_request_attributes(): void
+    public function test_it_sets_portal_context(): void
     {
         Portal::factory()->create(['domain' => 'acme.uspacy.com', 'integration_code' => 'crm']);
         Portal::factory()->create(['domain' => 'acme.uspacy.com', 'integration_code' => 'other']);
@@ -111,12 +111,9 @@ class ResolvePortalTest extends TestCase
 
     private function makeToken(?string $domain, ?string $integrationCode = 'crm', string $secret = self::SECRET): string
     {
-        $claims = array_filter([
-            'iat' => time(),
+        return JWT::encode(['iat' => time()], $secret, 'HS256', head: array_filter([
             'domain' => $domain,
             'integration_code' => $integrationCode,
-        ]);
-
-        return JWT::encode($claims, $secret, 'HS256');
+        ]));
     }
 }

@@ -25,7 +25,7 @@ class PortalMeTest extends TestCase
     public function test_it_returns_current_portal(): void
     {
         $portal = Portal::factory()->create(['domain' => 'acme.uspacy.com', 'integration_code' => 'crm']);
-        $token = JWT::encode(['iat' => time(), 'domain' => 'acme.uspacy.com', 'integration_code' => 'crm'], self::SECRET, 'HS256');
+        $token = JWT::encode(['iat' => time()], self::SECRET, 'HS256', head: ['domain' => 'acme.uspacy.com', 'integration_code' => 'crm']);
 
         $this->withToken($token)
             ->getJson('/crm/portals/me')
