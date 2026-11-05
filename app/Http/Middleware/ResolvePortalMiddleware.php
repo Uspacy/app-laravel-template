@@ -29,7 +29,7 @@ class ResolvePortalMiddleware
         $domain = Arr::get($decoded, 'headers.domain');
 
         if (! $domain) {
-            \abort(401, 'Domain is required in token claims');
+            \abort(401, 'Domain is required in token');
         }
 
         $portal = Portal::whereDomain($domain)

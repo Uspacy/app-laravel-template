@@ -22,6 +22,13 @@ class UspacySDKFactoryTest extends TestCase
         ]]);
     }
 
+    protected function tearDown(): void
+    {
+        MockClient::destroyGlobal();
+
+        parent::tearDown();
+    }
+
     public function test_it_refreshes_and_stores_tokens_on_unauthorized_response(): void
     {
         $this->freezeSecond();
@@ -39,6 +46,27 @@ class UspacySDKFactoryTest extends TestCase
         $this->assertSame('fresh', $portal->token);
         $this->assertSame('fresh-refresh', $portal->refresh_token);
         $this->assertTrue($portal->expiry_date->equalTo(now()->addHour()));
+    }
+
+    public function test_it_refreshes_expired_token_before_first_request(): void
+    {
+        $this->freezeSecond();
+        $portal = Portal::factory()->create([
+            'integration_code' => 'crm',
+            'token' => 'stale',
+            'expiry_date' => now()->subMinute(),
+        ]);
+        $mock = MockClient::global([
+            MockResponse::make(['jwt' => 'fresh', 'refreshToken' => 'fresh-refresh', 'expireInSeconds' => 3600]),
+            MockResponse::make([]),
+        ]);
+
+        (new UspacySDKFactory)->fromPortal($portal)->http()->get('/some/endpoint');
+
+        $portal->refresh();
+        $this->assertSame('fresh', $portal->token);
+        $this->assertTrue($portal->expiry_date->equalTo(now()->addHour()));
+        $this->assertSame('Bearer fresh', $mock->getLastPendingRequest()->headers()->get('Authorization'));
     }
 
     public function test_it_requires_integration_credentials(): void

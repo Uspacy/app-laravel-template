@@ -22,7 +22,7 @@ class PortalFactory extends Factory
             'integration_code' => $this->faker->slug(2),
             'token' => $this->faker->sha256(),
             'refresh_token' => $this->faker->sha256(),
-            'expiry_date' => $this->faker->dateTime()->add(new \DateInterval('PT1H'))->getTimestamp(),
+            'expiry_date' => now()->addHour(),
         ];
     }
 }
