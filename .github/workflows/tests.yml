@@ -23,8 +23,8 @@ jobs:
           extensions: sqlite3
           coverage: none
 
-      - name: Install dependencies
-        run: composer install --prefer-dist --no-progress
+      - name: Set up project
+        run: composer setup --no-interaction
 
       - name: Run tests
         run: php artisan test --env=testing
