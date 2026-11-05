@@ -9,28 +9,47 @@ permissions:
   contents: read
 
 jobs:
-  checks:
+  install:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Set up PHP
-        uses: shivammathur/setup-php@v2
+      - uses: shivammathur/setup-php@v2
         with:
           php-version: "8.4"
-          extensions: sqlite3
           coverage: none
 
-      - name: Set up project
-        run: composer setup --no-interaction
+      # Key must match .github/actions/setup/action.yml
+      - id: cache
+        uses: actions/cache@v4
+        with:
+          path: vendor
+          key: vendor-${{ runner.os }}-php8.4-${{ hashFiles('composer.lock') }}
 
-      - name: Lint (Pint)
-        run: composer lint
+      - if: steps.cache.outputs.cache-hit != 'true'
+        run: composer install --no-interaction --prefer-dist
 
-      - name: Static analysis (Larastan)
-        run: composer analyse
+  lint:
+    needs: install
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
+      - run: composer lint
 
-      - name: Tests
-        run: composer test
+  analyse:
+    needs: install
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
+      - run: composer analyse
+
+  test:
+    needs: [lint, analyse]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
+      - run: cp .env.example .env && php artisan key:generate
+      - run: composer test
