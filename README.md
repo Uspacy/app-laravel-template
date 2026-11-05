@@ -135,3 +135,8 @@ composer test                # run the tests
 vendor/bin/pint --dirty      # format the code
 ```
 
+
+## Resources
+
+- [Uspacy API reference](https://uspacy.readme.io/reference/introduction)
+- [App development for the Marketplace using external lines](https://uspacy.com/support/knowledgebase/app-development-for-a-marketplace-using-external-lines-en/)
