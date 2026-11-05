@@ -19,14 +19,13 @@ Requires PHP 8.4 and Composer.
 
 ```mermaid
 sequenceDiagram
-    actor Admin as Portal admin / owner
-    actor User as Portal user
+    actor User as Portal users
     participant S as Uspacy internal service
     participant A as This backend
     participant DB as Database
     participant API as Uspacy API (acme.uspacy.com)
 
-    Admin->>S: Clicks "Install" in the Marketplace
+    User->>S: Clicks "Install" in the Marketplace<br/>(admin / owner only)
     S->>A: POST /{integration}/v1/portals/install<br/>Authorization: Bearer JWT<br/>body: token, refresh_token, expiry_date
     A->>A: Find the integration by {integration} in the URL
     A->>A: Verify the JWT signature with client_secret
@@ -52,8 +51,8 @@ sequenceDiagram
     A->>DB: Load the portal and its token
     A->>API: Create a chat, a CRM entity, a task...<br/>(new token if expired or on 401)
 
-    Note over Admin,A: Uninstall follows the same path
-    Admin->>S: Clicks "Uninstall" in the Marketplace
+    Note over User,A: Uninstall follows the same path
+    User->>S: Clicks "Uninstall" in the Marketplace<br/>(admin / owner only)
     S->>A: DELETE /{integration}/v1/portals/uninstall<br/>Authorization: Bearer JWT
     A->>DB: Delete the portal
     A-->>S: 200 Portal uninstalled successfully
