@@ -11,7 +11,7 @@ class IntegrationTokenDecoder
     ) {}
 
     /**
-     * @param  string  $integrationCodePath  e.g. "headers.integration_code" or "claims.integration_code"
+     * @param  string  $integrationCodePath  e.g. "headers.integration_code" or "headers.integration_code"
      * @return array{headers: array, claims: array, integration_code: string, client_id: string}
      */
     public function decode(string $token, string $pathname, string $integrationCodePath): array

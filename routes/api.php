@@ -22,4 +22,4 @@ Route::prefix('/{integration}/portals')->group(function () {
 Route::get('/{integration}/crm/deals', [CrmDealsController::class, 'index'])->middleware(ResolvePortalMiddleware::class);
 
 // Test sns_subscription_url: logs SNS messages, no signature check
-Route::post('/example-integration/uspacy/webhooks', [UspacyWebhooksController::class, 'handle']);
+Route::post('/{integration}/uspacy/webhooks', [UspacyWebhooksController::class, 'handle']);
