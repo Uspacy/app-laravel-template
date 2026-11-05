@@ -17,7 +17,7 @@ class UspacyWebhooksTest extends TestCase
         parent::setUp();
 
         config(['uspacy.integrations' => [
-            'crm' => ['integration_code' => 'crm', 'client_id' => 'crm-client', 'client_secret' => 'secret'],
+            'example-integration' => ['integration_code' => 'crm', 'client_id' => 'crm-client', 'client_secret' => 'secret'],
         ]]);
     }
 
@@ -27,7 +27,7 @@ class UspacyWebhooksTest extends TestCase
         Portal::factory()->create(['domain' => 'acme.uspacy.com', 'integration_code' => 'crm']);
         $message = ['Type' => 'Notification', 'MessageId' => 'id-1', 'data' => ['domain' => 'acme.uspacy.com']];
 
-        $this->postWebhook('crm', json_encode($message))->assertOk();
+        $this->postWebhook('example-integration', json_encode($message))->assertOk();
 
         Log::shouldHaveReceived('info')->with('SNS message received', $message)->once();
     }
@@ -39,7 +39,7 @@ class UspacyWebhooksTest extends TestCase
 
         $message = ['data' => ['domain' => 'acme.uspacy.com']];
 
-        $this->postWebhook('crm', json_encode($message))->assertOk();
+        $this->postWebhook('example-integration', json_encode($message))->assertOk();
 
         Log::shouldHaveReceived('warning')->with('Portal not found for SNS message', ['domain' => 'acme.uspacy.com'])->once();
         Log::shouldNotHaveReceived('info', ['SNS message received', $message]);
@@ -47,7 +47,7 @@ class UspacyWebhooksTest extends TestCase
 
     public function test_it_acknowledges_invalid_json(): void
     {
-        $this->postWebhook('crm', 'not json')->assertOk();
+        $this->postWebhook('example-integration', 'not json')->assertOk();
     }
 
     public function test_it_returns_not_found_for_unconfigured_pathname(): void
