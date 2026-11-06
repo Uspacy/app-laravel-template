@@ -25,11 +25,11 @@ class UspacyWebhooksTest extends TestCase
     {
         Log::spy();
         Portal::factory()->create(['domain' => 'acme.uspacy.com', 'integration_code' => 'crm']);
-        $message = ['Type' => 'Notification', 'MessageId' => 'id-1', 'data' => ['domain' => 'acme.uspacy.com']];
+        $event = ['data' => ['service' => 'crm', 'domain' => 'acme.uspacy.com']];
 
-        $this->postWebhook('example-integration', json_encode($message))->assertOk();
+        $this->postWebhook('example-integration', $this->envelope($event))->assertOk();
 
-        Log::shouldHaveReceived('info')->with('SNS message received', $message)->once();
+        Log::shouldHaveReceived('info')->with('SNS message received', ['message_id' => 'id-1', 'event' => $event])->once();
     }
 
     public function test_it_acknowledges_message_for_unknown_portal(): void
@@ -37,17 +37,24 @@ class UspacyWebhooksTest extends TestCase
         Log::spy();
         Portal::factory()->create(['domain' => 'acme.uspacy.com', 'integration_code' => 'other']);
 
-        $message = ['data' => ['domain' => 'acme.uspacy.com']];
-
-        $this->postWebhook('example-integration', json_encode($message))->assertOk();
+        $this->postWebhook('example-integration', $this->envelope(['data' => ['domain' => 'acme.uspacy.com']]))->assertOk();
 
         Log::shouldHaveReceived('warning')->with('Portal not found for SNS message', ['domain' => 'acme.uspacy.com'])->once();
-        Log::shouldNotHaveReceived('info', ['SNS message received', $message]);
+        Log::shouldNotHaveReceived('info', ['SNS message received', \Mockery::any()]);
     }
 
     public function test_it_acknowledges_invalid_json(): void
     {
         $this->postWebhook('example-integration', 'not json')->assertOk();
+    }
+
+    public function test_it_acknowledges_envelope_without_message(): void
+    {
+        Log::spy();
+
+        $this->postWebhook('example-integration', json_encode(['Type' => 'Notification']) ?: '')->assertOk();
+
+        Log::shouldHaveReceived('warning')->withArgs(fn (string $text) => $text === 'Invalid SNS message')->once();
     }
 
     public function test_it_returns_not_found_for_unconfigured_pathname(): void
@@ -57,7 +64,14 @@ class UspacyWebhooksTest extends TestCase
 
     private function postWebhook(string $integration, string $content): TestResponse
     {
-        // SNS sends JSON with Content-Type: text/plain
-        return $this->call('POST', "/{$integration}/v1/uspacy/webhooks", server: ['CONTENT_TYPE' => 'text/plain'], content: $content);
+        return $this->call('POST', "/{$integration}/v1/uspacy/webhooks", content: $content);
+    }
+
+    /**
+     * @param  array<string, mixed>  $event
+     */
+    private function envelope(array $event): string
+    {
+        return json_encode(['Type' => 'Notification', 'MessageId' => 'id-1', 'Message' => json_encode($event)]) ?: '';
     }
 }

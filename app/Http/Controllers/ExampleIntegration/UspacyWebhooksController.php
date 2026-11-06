@@ -24,19 +24,22 @@ class UspacyWebhooksController extends Controller
             return response()->noContent(200);
         }
 
-        // SNS sends JSON with Content-Type: text/plain, so $request->json() stays empty.
-        $message = json_decode(request()->getContent(), true);
+        // The relay posts the SNS envelope without a Content-Type, so $request->json() stays empty.
+        $envelope = json_decode(request()->getContent(), true);
+        $event = is_array($envelope) && is_string($envelope['Message'] ?? null)
+            ? json_decode($envelope['Message'], true)
+            : null;
 
-        if (! is_array($message)) {
+        if (! is_array($event)) {
             Log::warning('Invalid SNS message', ['content' => request()->getContent()]);
 
             return response()->noContent(200);
         }
 
-        $portalDomain = $message['data']['domain'] ?? null;
+        $portalDomain = $event['data']['domain'] ?? null;
 
         if (! $portalDomain) {
-            Log::warning('SNS message missing portal domain', ['message' => $message]);
+            Log::warning('SNS message missing portal domain', ['event' => $event]);
 
             return response()->noContent(200);
         }
@@ -53,7 +56,7 @@ class UspacyWebhooksController extends Controller
 
         $this->portalContext->set($portal);
 
-        Log::info('SNS message received', $message);
+        Log::info('SNS message received', ['message_id' => $envelope['MessageId'] ?? null, 'event' => $event]);
 
         return response()->noContent(200);
     }
