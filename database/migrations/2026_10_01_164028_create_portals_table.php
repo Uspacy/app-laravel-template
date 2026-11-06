@@ -16,7 +16,7 @@ return new class extends Migration
             $table->timestamps();
             $table->string('domain');
             $table->string('integration_code');
-            $table->timestamp('expiry_date');
+            $table->dateTime('expiry_date');
             $table->text('token');
             $table->text('refresh_token');
             $table->unique(['domain', 'integration_code']);

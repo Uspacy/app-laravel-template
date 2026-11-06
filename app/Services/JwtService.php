@@ -30,8 +30,6 @@ class JwtService
                 'claims' => (array) $claims,
             ];
         } catch (\Exception $ex) {
-            \report($ex);
-
             throw new JwtDecodeException(
                 code: $ex->getCode(),
                 previous: $ex,
