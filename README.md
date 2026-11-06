@@ -4,7 +4,7 @@ A starter backend for building an app for the [Uspacy](https://uspacy.com) CRM. 
 
 - **Install and uninstall.** It keeps a record for each Uspacy portal that installs your app.
 - **Calling the Uspacy API.** It calls the API on behalf of a portal (to create chats and messages, CRM entities, tasks, activities and more) and refreshes the access token automatically.
-- **Webhooks.** It receives Uspacy events through an AWS SNS subscription.
+- **Webhooks.** It receives Uspacy events from the Uspacy internal events emitter.
 
 Requires PHP 8.4 and Composer.
 
@@ -14,7 +14,7 @@ Requires PHP 8.4 and Composer.
 2. **Install.** A portal admin or owner clicks **Install** in the Marketplace. Uspacy's internal service then calls this backend at `POST /{integration}/v1/portals/install`. The request carries a JWT signed with your `client_secret`, plus the portal's API tokens. The backend checks the JWT and saves the portal along with its tokens.
 3. **Work.** With the saved token, the backend calls the Uspacy API on the portal's behalf. It can do whatever your app needs, for example create chats and messages, CRM entities, tasks and activities. A new token is fetched automatically, in two cases: before a request, if the stored token has already expired, and when the API returns `401`, after which the request is retried with the new token. Each new token is saved back to the portal.
 4. **User requests.** A portal user can also call this backend directly, for example `GET /{integration}/v1/portals/me`. The request carries a JWT signed with your `client_secret`. The backend finds the portal from the JWT, so the handler knows which portal the request is for.
-5. **Events (optional).** If your app is subscribed to webhooks, Uspacy sends events through AWS SNS to `POST /{integration}/v1/uspacy/webhooks`. See [Webhooks](#webhooks).
+5. **Events (optional).** If your app is subscribed to webhooks, the Uspacy internal events emitter sends events to `POST /{integration}/v1/uspacy/webhooks`. See [Webhooks](#webhooks).
 6. **Uninstall.** A portal admin or owner clicks **Uninstall**. Uspacy's internal service calls `DELETE /{integration}/v1/portals/uninstall`, and the backend deletes the portal.
 
 ```mermaid
@@ -94,7 +94,7 @@ Every URL starts with the integration key, then the API version:
 | `DELETE` | `/{integration}/v1/portals/uninstall` | Uspacy internal service | App removed from a portal | **Yes** |
 | `GET` | `/{integration}/v1/portals/me` | Portal user | The current portal | No |
 | `GET` | `/{integration}/v1/crm/deals` | Portal user | Example: first 10 CRM deals of the portal | No, example |
-| `POST` | `/{integration}/v1/uspacy/webhooks` | AWS SNS | Example webhook receiver (logs messages only) | No, example |
+| `POST` | `/{integration}/v1/uspacy/webhooks` | Uspacy internal events emitter | Example webhook receiver (logs messages only) | No, example |
 
 Uspacy needs only `install` and `uninstall`. The CRM deals and webhook routes are examples: replace them with your own app's logic, or delete them.
 

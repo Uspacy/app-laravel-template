@@ -19,19 +19,19 @@ class UspacyWebhooksController extends Controller
         $integrationConfig = config('uspacy.integrations')[$integration] ?? null;
 
         if (! $integrationConfig) {
-            Log::warning('SNS message received for unconfigured integration', ['integration' => $integration]);
+            Log::warning('Webhook received for unconfigured integration', ['integration' => $integration]);
 
             return response()->noContent(200);
         }
 
-        // The relay posts the SNS envelope without a Content-Type, so $request->json() stays empty.
+        // The relay posts the envelope without a Content-Type, so $request->json() stays empty.
         $envelope = json_decode(request()->getContent(), true);
         $event = is_array($envelope) && is_string($envelope['Message'] ?? null)
             ? json_decode($envelope['Message'], true)
             : null;
 
         if (! is_array($event)) {
-            Log::warning('Invalid SNS message', ['content' => request()->getContent()]);
+            Log::warning('Invalid webhook payload', ['content' => request()->getContent()]);
 
             return response()->noContent(200);
         }
@@ -39,7 +39,7 @@ class UspacyWebhooksController extends Controller
         $portalDomain = $event['data']['domain'] ?? null;
 
         if (! $portalDomain) {
-            Log::warning('SNS message missing portal domain', ['event' => $event]);
+            Log::warning('Webhook event missing portal domain', ['event' => $event]);
 
             return response()->noContent(200);
         }
@@ -49,14 +49,14 @@ class UspacyWebhooksController extends Controller
             ->first();
 
         if (! $portal) {
-            Log::warning('Portal not found for SNS message', ['domain' => $portalDomain]);
+            Log::warning('Portal not found for webhook event', ['domain' => $portalDomain]);
 
             return response()->noContent(200); // Prevent retrying the message
         }
 
         $this->portalContext->set($portal);
 
-        Log::info('SNS message received', ['message_id' => $envelope['MessageId'] ?? null, 'event' => $event]);
+        Log::info('Webhook event received', ['message_id' => $envelope['MessageId'] ?? null, 'event' => $event]);
 
         return response()->noContent(200);
     }

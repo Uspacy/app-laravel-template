@@ -21,7 +21,7 @@ class UspacyWebhooksTest extends TestCase
         ]]);
     }
 
-    public function test_it_logs_sns_message(): void
+    public function test_it_logs_webhook_event(): void
     {
         Log::spy();
         Portal::factory()->create(['domain' => 'acme.uspacy.com', 'integration_code' => 'crm']);
@@ -29,7 +29,7 @@ class UspacyWebhooksTest extends TestCase
 
         $this->postWebhook('example-integration', $this->envelope($event))->assertOk();
 
-        Log::shouldHaveReceived('info')->with('SNS message received', ['message_id' => 'id-1', 'event' => $event])->once();
+        Log::shouldHaveReceived('info')->with('Webhook event received', ['message_id' => 'id-1', 'event' => $event])->once();
     }
 
     public function test_it_acknowledges_message_for_unknown_portal(): void
@@ -39,8 +39,8 @@ class UspacyWebhooksTest extends TestCase
 
         $this->postWebhook('example-integration', $this->envelope(['data' => ['domain' => 'acme.uspacy.com']]))->assertOk();
 
-        Log::shouldHaveReceived('warning')->with('Portal not found for SNS message', ['domain' => 'acme.uspacy.com'])->once();
-        Log::shouldNotHaveReceived('info', ['SNS message received', \Mockery::any()]);
+        Log::shouldHaveReceived('warning')->with('Portal not found for webhook event', ['domain' => 'acme.uspacy.com'])->once();
+        Log::shouldNotHaveReceived('info', ['Webhook event received', \Mockery::any()]);
     }
 
     public function test_it_acknowledges_invalid_json(): void
@@ -54,7 +54,7 @@ class UspacyWebhooksTest extends TestCase
 
         $this->postWebhook('example-integration', json_encode(['Type' => 'Notification']) ?: '')->assertOk();
 
-        Log::shouldHaveReceived('warning')->withArgs(fn (string $text) => $text === 'Invalid SNS message')->once();
+        Log::shouldHaveReceived('warning')->withArgs(fn (string $text) => $text === 'Invalid webhook payload')->once();
     }
 
     public function test_it_returns_not_found_for_unconfigured_pathname(): void
