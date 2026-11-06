@@ -6,6 +6,8 @@ Guidance for AI coding agents working in this repository.
 
 Example/template Laravel 13 (PHP 8.4) backend for a Uspacy CRM integration app. Shows how an app gets installed on a Uspacy portal, calls the Uspacy API on the portal's behalf (via `uspacy/uspacy-php-sdk`), and receives Uspacy webhooks through an AWS SNS subscription. API-only: routes live in [routes/api.php](routes/api.php) with no `/api` prefix; every exception renders as JSON.
 
+**Uspacy platform docs** (registration, install flow, JWTs, tokens, REST API, external lines, webhooks, frontend): [docs/uspacy/README.md](docs/uspacy/README.md). Read the relevant file before answering questions about building a Uspacy integration.
+
 ## Commands
 
 ```bash
@@ -36,7 +38,7 @@ composer ide-helper:model                   # regenerate model PHPDoc, then pint
 
 **Calling Uspacy.** `UspacySDKFactory::fromPortal()` builds a `UspacySDK` for `https://{domain}`; signs in with client credentials if the stored token is expired, and attaches `RefreshApplicationTokenMiddleware`, which on a `401` signs in again, retries the request, and persists the new tokens back to the portal. Example usage: `CrmDealsController`.
 
-**Webhooks (SNS).** `POST /{integration}/v1/uspacy/webhooks` (`UspacyWebhooksController`, restricted to `example-integration`) is a test `sns_subscription_url`: it parses the raw body (SNS posts JSON as `text/plain`), finds the portal by `data.domain`, and logs the message. No SNS signature verification or subscription confirmation yet. Always returns 200 so SNS does not retry.
+**Webhooks (SNS).** `POST /{integration}/v1/uspacy/webhooks` (`UspacyWebhooksController`, restricted to `example-integration`) is a test `sns_subscription_url`: it decodes the envelope and its `Message` JSON string, finds the portal by `data.domain`, and logs the message. Deliveries come from Uspacy's relay, unsigned and without subscription confirmation; format in [docs/uspacy/webhooks.md](docs/uspacy/webhooks.md#application-webhooks). Always returns 200 so the relay does not retry.
 
 Integration-specific example code lives under `App\Http\Controllers\ExampleIntegration`.
 

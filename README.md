@@ -157,6 +157,7 @@ vendor/bin/pint --dirty      # format the code
 
 ## Resources
 
+- [Uspacy integration knowledge base](docs/uspacy/README.md): how apps, tokens, the API, external lines and webhooks work. Ask your AI assistant about them; it reads these files through [AGENTS.md](AGENTS.md).
 - [Uspacy API reference](https://uspacy.readme.io/reference/introduction)
 - [uspacy-php-sdk](https://github.com/Uspacy/uspacy-php-sdk): PHP client for the Uspacy API, used by this template
 - [App development for the Marketplace using external lines](https://uspacy.com/support/knowledgebase/app-development-for-a-marketplace-using-external-lines-en/)
