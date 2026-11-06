@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "uspacy": {
+      "type": "http",
+      "url": "https://mcp.uspacy.com/mcp"
+    }
+  }
+}
